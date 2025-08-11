@@ -1,12 +1,15 @@
-displayName: Demo Plugin
+displayName: Lowest Latency Endpoint Plugin
 type: middleware
 iconPath: .assets/icon.png
 
-import: github.com/traefik/plugindemo
+import: github.com/cilasbeltrame/lowestlatencyendpoint
 
-summary: '[Demo] Add Request Header'
+summary: |
+  This plugin sets the header with the lowest latency endpoint.
 
 testData:
-  Headers:
-    X-Demo: test
-    X-URL: '{{URL}}'
+  Endpoints:
+    - https://www.bbc.co.uk/robots.txt
+    - https://www.nic.ad.jp/robots.txt
+    - https://www.fastly.com/robots.txt
+  headerName: X-Lowest-Latency-Endpoint

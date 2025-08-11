@@ -1,75 +1,231 @@
-run:
-  timeout: 3m
-  skip-files: []
-  skip-dirs: []
+version: "2"
 
-linters-settings:
-  govet:
-    enable-all: true
-    disable:
-      - fieldalignment
-  golint:
-    min-confidence: 0
-  gocyclo:
-    min-complexity: 12
-  goconst:
-    min-len: 5
-    min-occurrences: 4
-  misspell:
-    locale: US
-  funlen:
-    lines: -1
-    statements: 50
-  godox:
-    keywords:
-      - FIXME
-  gofumpt:
-    extra-rules: true
+run:
+  timeout: 5m
+  tests: false
+  go: "1.22"
 
 linters:
-  enable-all: true
-  disable:
-    - deadcode # deprecated
-    - exhaustivestruct # deprecated
-    - golint # deprecated
-    - ifshort # deprecated
-    - interfacer # deprecated
-    - maligned # deprecated
-    - nosnakecase # deprecated
-    - scopelint # deprecated
-    - scopelint # deprecated
-    - structcheck # deprecated
-    - varcheck # deprecated
-    - sqlclosecheck # not relevant (SQL)
-    - rowserrcheck # not relevant (SQL)
-    - execinquery # not relevant (SQL)
-    - cyclop # duplicate of gocyclo
-    - bodyclose # Too many false positives: https://github.com/timakin/bodyclose/issues/30
+  default: none
+  enable:
+    - errcheck
+    - govet
+    - ineffassign
+    - staticcheck
+    - unused
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - containedctx
+    - contextcheck
+    - cyclop
+    - dogsled
     - dupl
-    - testpackage
-    - tparallel
-    - paralleltest
-    - nlreturn
-    - wsl
+    - durationcheck
+    - errchkjson
+    - errname
+    - errorlint
     - exhaustive
     - exhaustruct
-    - goerr113
-    - wrapcheck
-    - ifshort
-    - noctx
-    - lll
-    - gomnd
     - forbidigo
+    - forcetypeassert
+    - funlen
+    - gochecknoglobals
+    - gochecknoinits
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - godot
+    - godox
+    - gosec
+    - grouper
+    - lll
+    - maintidx
+    - makezero
+    - misspell
+    - nakedret
+    - nestif
+    - nilerr
+    - nilnil
+    - nlreturn
+    - noctx
+    - nolintlint
+    - nonamedreturns
+    - nosprintfhostport
+    - paralleltest
+    - prealloc
+    - predeclared
+    - promlinter
+    - revive
+    - tagliatelle
+    - testpackage
+    - thelper
+    - tparallel
+    - unconvert
+    - unparam
     - varnamelen
+    - whitespace
+
+  settings:
+    cyclop:
+      max-complexity: 10
+    
+    dupl:
+      threshold: 100
+    
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+    
+    funlen:
+      lines: 100
+      statements: 50
+    
+    gocognit:
+      min-complexity: 10
+    
+    goconst:
+      min-len: 2
+      min-occurrences: 2
+    
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - style
+        - performance
+      disabled-checks:
+        - dupImport
+        - ifElseChain
+        - octalLiteral
+        - whyNoLint
+    
+    gocyclo:
+      min-complexity: 15
+    
+    godot:
+      scope: declarations
+      exclude:
+        - "^fixme:"
+        - "^todo:"
+      period: true
+      capital: false
+    
+    gosec:
+      severity: "low"
+      confidence: "low"
+      excludes:
+        - G204 # Subprocess launched with variable
+        - G404 # Use of weak random number generator
+    
+    govet:
+      enable:
+        - shadow
+      disable:
+        - fieldalignment
+    
+    lll:
+      line-length: 140
+    
+    misspell:
+      locale: US
+    
+    nakedret:
+      max-func-lines: 30
+    
+    nestif:
+      min-complexity: 4
+    
+    nolintlint:
+      require-explanation: false
+      require-specific: false
+    
+    revive:
+      severity: warning
+      rules:
+        - name: exported
+          severity: warning
+          disabled: false
+          arguments:
+            - "checkPrivateReceivers"
+            - "sayRepetitiveInsteadOfStutters"
+    
+    staticcheck:
+      checks: ["all"]
+    
+    unparam:
+      check-exported: false
+    
+    unused:
+      field-writes-are-uses: true
+      post-statements-are-reads: true
+      exported-fields-are-used: true
+      parameters-are-used: true
+      local-variables-are-used: true
+      generated-is-used: true
+    
+    varnamelen:
+      min-name-length: 1
+      ignore-type-assert-ok: true
+      ignore-map-index-ok: true
+      ignore-chan-recv-ok: true
+      ignore-names:
+        - err
+        - wg
+        - fs
+        - id
+        - ip
+        - db
+        - tx
+        - ok
+        - tc
+    
+    whitespace:
+      multi-if: false
+      multi-func: false
+
+  exclusions:
+    generated: strict
+    
+    rules:
+      - path: _test\.go
+        linters:
+          - cyclop
+          - dupl
+          - errcheck
+          - funlen
+          - gocognit
+          - goconst
+          - gocyclo
+          - gosec
+          - lll
+          - unparam
+          - unused
+          - varnamelen
+      
+      - path: main\.go
+        linters:
+          - gochecknoinits
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  
+  settings:
+    gofmt:
+      simplify: true
+    
+    goimports:
+      local-prefixes: github.com/traefik
 
 issues:
-  exclude-use-default: false
-  max-per-linter: 0
-  max-same-issues: 0
-  exclude: []
-  exclude-rules:
-    - path: (.+)_test.go
-      linters:
-        - goconst
-        - funlen
-        - godot
+  max-issues-per-linter: 50
+  max-same-issues: 3
+
+output:
+  formats:
+    text:
+      path: stdout
+      colors: true
+  show-stats: true
